@@ -6342,6 +6342,12 @@ body.no-sidebar .sidebar {
   text-overflow: ellipsis;
 }
 
+.widget-body .link-list li {
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow: ellipsis;
+}
+
 .repo-body {
   display: -webkit-box;
   padding: 0 15px;
