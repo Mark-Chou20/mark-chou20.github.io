@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>Hexo</title>
+  <meta name="description" content="Java8之Optional类，巧解NPEohxt6&lt;9&gt;Zskg NullPointerException——空指针异常是程序中常见异常之一，也是导致程序运行失败的常见异常。以前，为了防止出现null，我们常在代码中使用if…else…做防御性检查，后来Guava为了解决上述方法造成的代码污染引入了Optional类。 Java8借鉴Guava的Optional也加入了同名的Opti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Java8之Optional类，巧解NPEohxt6&lt;9&gt;Zskg NullPointerException——空指针异常是程序中常见异常之一，也是导致程序运行失败的常见异常。以前，为了防止出现null，我们常在代码中使用if…else…做防御性检查，后来Guava为了解决上述方法造成的代码污染引入了Optional类。 Java8借鉴Guava的Optional也加入了同名的Opti">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-24T06:53:11.200Z">
+<meta property="article:modified_time" content="2021-01-05T05:05:50.515Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://example.com/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/cofess" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Mark Chou</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Java &amp; JavaWeb Developer</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> 中国，大连</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+
+    
+      
+
+    
+      
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/01/24/springboot%E4%B8%AD%E7%9A%84%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88/" class="title">(no title)</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-24T06:55:00.750Z" itemprop="datePublished">2021-01-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/" class="title">(no title)</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-24T06:53:11.200Z" itemprop="datePublished">2021-01-24</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Java8之Optional类，巧解NPE" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/" class="article-date">
+	  <time datetime="2021-01-24T06:53:11.200Z" itemprop="datePublished">2021-01-24</time>
+	</a>
+</span>
+        
+        
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="Java8之Optional类，巧解NPE"><a href="#Java8之Optional类，巧解NPE" class="headerlink" title="Java8之Optional类，巧解NPE"></a>Java8之Optional类，巧解NPE</h3><p>ohxt6&lt;9&gt;Zskg</p>
+<p><code>NullPointerException</code>——空指针异常是程序中常见异常之一，也是导致程序运行失败的常见异常。以前，为了防止出现<code>null</code>，我们常在代码中使用<code>if…else…</code>做防御性检查，后来Guava为了解决上述方法造成的代码污染引入了<code>Optional</code>类。</p>
+<p>Java8借鉴Guava的<code>Optional</code>也加入了同名的<code>Optional</code>类，<code>Optional</code>类提供了很多实用的方法，借此可以避免显示的空指针判断，从而避免<code>NullPointerException</code>。</p>
+<h5 id="常见方法"><a href="#常见方法" class="headerlink" title="常见方法"></a>常见方法</h5><p>下面逐一讲解<code>Optional</code>类提供的方法。</p>
+<h6 id="of方法"><a href="#of方法" class="headerlink" title="of方法"></a>of方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;T&gt; Optional&lt;T&gt; of(T value) &#123;</span><br><span class="line">    return new Optional&lt;&gt;(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Optional</code>中的构造方法都是<code>private</code>的，外部无法使用<code>new</code>方式创建<code>Optional</code>对象，但<code>Optional</code>类提供三个方法用来获取<code>Optional</code>的实例对象。of方法是其中之一，用来创建一个包装对象值非空的<code>Optional</code>实例对象，若包装对象值为空则抛出<code>NullPointerException</code>异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; user若为null则会抛出NullPointerException异常</span><br><span class="line">Optional&lt;User&gt; optional_user &#x3D; Optional.of(user);</span><br></pre></td></tr></table></figure>
+<h6 id="ofNullable方法"><a href="#ofNullable方法" class="headerlink" title="ofNullable方法"></a>ofNullable方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static &lt;T&gt; Optional&lt;T&gt; ofNullable(T value) &#123;</span><br><span class="line">    return value &#x3D;&#x3D; null ? empty() : of(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取<code>Optional</code>实例对象的方法之一，返回一个允许包装对象值为空的<code>Optional</code>实例对象。<code>ofNullable</code>与<code>of</code>方法的区别就在是否允许包装对象为空。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 可以为空，且optional_user1 &#x3D;&#x3D; optional_user2为true</span><br><span class="line">Optional&lt;User&gt; optional_user1 &#x3D; Optional.ofNullable(null);</span><br><span class="line">Optional&lt;User&gt; optional_user2 &#x3D; Optional.ofNullable(null);</span><br></pre></td></tr></table></figure>
+<h6 id="empty方法"><a href="#empty方法" class="headerlink" title="empty方法"></a>empty方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public static&lt;T&gt; Optional&lt;T&gt; empty() &#123;</span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    Optional&lt;T&gt; t &#x3D; (Optional&lt;T&gt;) EMPTY;</span><br><span class="line">    return t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>获取<code>Optional</code>实例对象的方法之一，创建一个包装对象值为空的<code>Optional</code>实例对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 返回包装对象值为空的Optional实例对象</span><br><span class="line">Optional&lt;User&gt; optional_user &#x3D; Optional.empty();</span><br></pre></td></tr></table></figure>
+<h6 id="isPresent方法"><a href="#isPresent方法" class="headerlink" title="isPresent方法"></a>isPresent方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean isPresent() &#123;</span><br><span class="line">    return value !&#x3D; null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>判断包装对象值是否为空。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 这里的user不为null</span><br><span class="line">Optional&lt;User&gt; optional_user1 &#x3D; Optional.ofNullable(user);</span><br><span class="line">Optional&lt;User&gt; optional_user2 &#x3D; Optional.ofNullable(null);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 返回true</span><br><span class="line">optional_user1.isPresent();</span><br><span class="line">&#x2F;&#x2F; 返回false</span><br><span class="line">optional_user2.isPresent();</span><br></pre></td></tr></table></figure>
+<h6 id="ifPresent方法"><a href="#ifPresent方法" class="headerlink" title="ifPresent方法"></a>ifPresent方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void ifPresent(Consumer&lt;? super T&gt; consumer) &#123;</span><br><span class="line">    if (value !&#x3D; null)</span><br><span class="line">        consumer.accept(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>判断包装对象值是否为空，如果包装对象的值为空则调用<code>Consumer</code>对象的<code>accept()</code>方法，不为空则不调用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Optional.ofNullable(user).ifPresent(() -&gt; &#123;</span><br><span class="line">	&#x2F;&#x2F; 包装对象值为空执行的代码</span><br><span class="line">    ……</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h6 id="get方法"><a href="#get方法" class="headerlink" title="get方法"></a>get方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public T get() &#123;</span><br><span class="line">    if (value &#x3D;&#x3D; null) &#123;</span><br><span class="line">        throw new NoSuchElementException(&quot;No value present&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    return value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回包装对象的值，若为空则抛出<code>NoSuchElementException</code>异常。</p>
+<h6 id="orElse方法"><a href="#orElse方法" class="headerlink" title="orElse方法"></a>orElse方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public T orElse(T other) &#123;</span><br><span class="line">    return value !&#x3D; null ? value : other;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>若包装对象不是<code>null</code>则返回包装对象的实际值，若为<code>null</code>则返回指定值，即返回传入的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Optional.ofNullable(user).orElse(new User(&quot;zhangsan&quot;, 20));</span><br></pre></td></tr></table></figure>
+<h6 id="orElseGet方法"><a href="#orElseGet方法" class="headerlink" title="orElseGet方法"></a>orElseGet方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public T orElseGet(Supplier&lt;? extends T&gt; other) &#123;</span><br><span class="line">    return value !&#x3D; null ? value : other.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>作用同<code>orElse</code>方法，只不过<code>orElseGet</code>的入参是<code>Supplier</code>对象，当<code>Optional</code>包装对象为<code>null</code>时返回指定值，返回值由<code>Supplier</code>的<code>get</code>方法产生。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; name是一个String对象</span><br><span class="line">Optional.ofNullable(name).orElseGet(() -&gt; &quot;zhangsan&quot;);</span><br></pre></td></tr></table></figure>
+<h6 id="orElseThrow方法"><a href="#orElseThrow方法" class="headerlink" title="orElseThrow方法"></a>orElseThrow方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public &lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X &#123;</span><br><span class="line">    if (value !&#x3D; null) &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        throw exceptionSupplier.get();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>作用同<code>orElseGet</code>类似，当包装对象不为空时返回包装对象的值，为空时返回一个<code>Throwable</code>异常。</p>
+<h6 id="filter方法"><a href="#filter方法" class="headerlink" title="filter方法"></a>filter方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public Optional&lt;T&gt; filter(Predicate&lt;? super T&gt; predicate) &#123;</span><br><span class="line">    Objects.requireNonNull(predicate);</span><br><span class="line">    if (!isPresent())</span><br><span class="line">        return this;</span><br><span class="line">    else</span><br><span class="line">        return predicate.test(value) ? this : empty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>过滤<code>Optional</code>的包装对象，当包装对象满足<code>Predicate</code>的条件时返回该<code>Optional</code>实例，否则返回包装对象为<code>null</code>的<code>Optional</code>实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 过滤name为zhangsan的User，当不存在时打印提示信息</span><br><span class="line">Optional.ofNullable(user)</span><br><span class="line">	.filter(u -&gt; u.getName.equals(&quot;zhangsan&quot;))</span><br><span class="line">	.ifPresent(() -&gt; System.out.println(&quot;There is no zhangsan&quot;));</span><br></pre></td></tr></table></figure>
+<h6 id="map方法"><a href="#map方法" class="headerlink" title="map方法"></a>map方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public&lt;U&gt; Optional&lt;U&gt; map(Function&lt;? super T, ? extends U&gt; mapper) &#123;</span><br><span class="line">    Objects.requireNonNull(mapper);</span><br><span class="line">    if (!isPresent())</span><br><span class="line">        return empty();</span><br><span class="line">    else &#123;</span><br><span class="line">        return Optional.ofNullable(mapper.apply(value));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>map</code>方法对包装对象进行函数运算（即调用<code>Function</code>的<code>apply</code>方法）后返回一个新的<code>Optional</code>实例对象，新<code>Optional</code>实例的包装对象可以时任意类型（不一定与原包装对象的类型保持一致）。</p>
+<p>如果包装对象为<code>null</code>则依然返回一个包装对象为<code>null</code>的<code>Optional</code>实例，map可以无限级调用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 返回一个Optional&lt;String&gt;</span><br><span class="line">Optional.of(user).map(u -&gt; u.getName());</span><br></pre></td></tr></table></figure>
+<h6 id="flatMap方法"><a href="#flatMap方法" class="headerlink" title="flatMap方法"></a>flatMap方法</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public&lt;U&gt; Optional&lt;U&gt; flatMap(Function&lt;? super T, Optional&lt;U&gt;&gt; mapper) &#123;</span><br><span class="line">    Objects.requireNonNull(mapper);</span><br><span class="line">    if (!isPresent())</span><br><span class="line">        return empty();</span><br><span class="line">    else &#123;</span><br><span class="line">        return Objects.requireNonNull(mapper.apply(value));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>功能同<code>map</code>方法，二者的区别在<code>mapper</code>的<code>apply</code>方法的返回值类型不同，<code>map</code>方法中的<code>mapper</code>返回值可以是任意类型，而<code>flatMap</code>中的<code>mapper</code>的返回值是<code>Optional</code>类型，<code>map</code>方法会自动封装返回一个<code>Optional</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 返回一个Optional&lt;String&gt;，作用同map的例子</span><br><span class="line">Optional.of(user).flatMap(u -&gt; Optional.of(u.getName()));</span><br></pre></td></tr></table></figure>
+<h5 id="解决NPE"><a href="#解决NPE" class="headerlink" title="解决NPE"></a>解决NPE</h5><p>在由<code>Optional</code>之前，我们会使用<code>if…else…</code>做防御性检查，以防止出现空指针异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public String getUserName(User user) &#123;</span><br><span class="line">  if(user &#x3D;&#x3D; null) &#123;</span><br><span class="line">    return &quot;unknown&quot;;</span><br><span class="line">  &#125;</span><br><span class="line">  return user.getName();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有了<code>Optional</code>之后，我们可以这样做了……</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public String getUserName(User user) &#123;</span><br><span class="line">  Optional&lt;User&gt; optional_user &#x3D; Optional.ofNullable(user);</span><br><span class="line">  if(!optional_user.isPresent()) &#123;</span><br><span class="line">    return &quot;unknown&quot;;</span><br><span class="line">  &#125;</span><br><span class="line">  return user.getName();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>啊……这……</p>
+<p>显然这两种方法并无本质区别，依然都有防御性检查，依然都不够简洁。只不过第二种方法利用<code>isPresent</code>方法替换了显示的<code>null</code>判断。</p>
+<p>正确的姿势。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public String getUserName(User user) &#123;</span><br><span class="line">  &#x2F;&#x2F; 善用map方法</span><br><span class="line">  return Optional.ofNullable(user)</span><br><span class="line">  				 .map(u -&gt; u.getName())</span><br><span class="line">  				 .orElse(&quot;unkonwn&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个例子并不能完全展示<code>Optional</code>的实力，再看下面的示例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">* 获取领导姓名，不使用Optional</span><br><span class="line">* *&#x2F;</span><br><span class="line">public String getBossName(User user) &#123;</span><br><span class="line">  if(user !&#x3D; null) &#123;</span><br><span class="line">    Company company &#x3D; user.getCompany();</span><br><span class="line">    if(company !&#x3D; null) &#123;</span><br><span class="line">      Boss boss &#x3D; company.getBoss();</span><br><span class="line">      if(boss !&#x3D; null) &#123;</span><br><span class="line">        return boss.getName();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">        </span><br><span class="line">  return &quot;unkonwn&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>优雅的姿势。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">* 获取领导姓名，使用Optional</span><br><span class="line">* *&#x2F;</span><br><span class="line">public String getBossName(User user) &#123;</span><br><span class="line">  return Optional.ofNullable(user)</span><br><span class="line">  				 .map(u -&gt; u.getCompany())</span><br><span class="line">  				 .map(c -&gt; c.getBoss())</span><br><span class="line">  				 .map(b -&gt; b.getName())</span><br><span class="line">  				 .orElse(&quot;unkonwn&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>善用<code>Optional</code>会使我们的代码无比的优雅和简洁。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/" title="" target="_blank" rel="external">http://example.com/2021/01/24/Java8%E4%B9%8BOptional%E7%B1%BB%EF%BC%8C%E5%B7%A7%E8%A7%A3NPE/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/cofess" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/cofess" target="_blank"><span class="text-dark">Mark Chou</span><small class="ml-1x">Java &amp; JavaWeb Developer</small></a></h3>
+        <div>一个热爱生活与技术的Java程序员。喜欢思考，喜欢研究新技术，喜欢架构，对技术有独特的追求。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/01/24/springboot%E4%B8%AD%E7%9A%84%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88/" title="(no title)"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/donate/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">喜欢也可以关注我的公众号【程序员Mark Chou】</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/donate/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">喜欢也可以关注我的公众号【程序员Mark Chou】</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
