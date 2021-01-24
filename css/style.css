@@ -806,6 +806,10 @@ address {
   clear: both;
 }
 
+.main .article-meta .post-comment {
+	display: none;
+}
+
 .row {
   margin-left: -15px;
   margin-right: -15px;
@@ -6333,6 +6337,9 @@ body.no-sidebar .sidebar {
   margin: 15px 0;
   font-size: 16px;
   font-weight: 600;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
 }
 
 .repo-body {
