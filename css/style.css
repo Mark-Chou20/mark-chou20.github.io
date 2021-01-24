@@ -6028,7 +6028,7 @@ body.no-sidebar .sidebar {
 }
 
 .category-list-child {
-  padding-left: 15px;
+  padding-left: 15px !important;
 }
 
 .recent-post-list li + li {
